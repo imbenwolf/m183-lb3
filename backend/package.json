@@ -6,5 +6,11 @@
   "repository": "https://gitlab.iet-gibb.ch/benjamin.wolf/m183-lb3",
   "author": "Janik Kämpfer & Benjamin Wolf",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "scripts": {
+    "serve": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.17.0"
+  }
 }
