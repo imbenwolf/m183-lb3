@@ -1,0 +1,10 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend for LB3 of M183",
+  "main": "app.js",
+  "repository": "https://gitlab.iet-gibb.ch/benjamin.wolf/m183-lb3",
+  "author": "Janik Kämpfer & Benjamin Wolf",
+  "license": "MIT",
+  "private": true
+}
