@@ -1,22 +1,31 @@
 const express = require("express")
 const shell = require("shelljs")
 
+const db = require("./db.js")
+
 const app = express()
 const port = 3000
 
 app.get('/system', (req, res) => {
     const command = req.query.command
-
     let result = {}
     if (command) {
-        const output = shell.exec(command)
-        console.log(`/system: output for command "${command}" is: ${output}`)
+        console.log(`/system called with command "${command}"`)
+        const output = shell.exec(command, { silent: true })
         result.output = output
     } else {
-        console.error('/system: No "command" parameter specified')
+        console.error('/system called with no "command" parameter')
         result.error = 'Please specify a command with the "command" GET parameter'
     }
     res.send(result)
 })
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+const server = app.listen(port, async () => {
+    try {
+        await db.setup()
+        console.log(`LB3 backend running on port: ${port}!`)
+    } catch (err) {
+        console.error(`setup returned ${err}`)
+        server.close()
+    }
+})
