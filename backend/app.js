@@ -20,6 +20,18 @@ app.get('/system', (req, res) => {
     res.send(result)
 })
 
+app.get('/users', async (req, res) => {
+    let result = {}
+    try {
+        console.log('/users called')
+        result = await db.getUsers()
+    } catch (err) {
+        console.error(`/users returned ${err}`)
+        result.error = 'Error during fetching of users. Please try again later'
+    }
+    res.send(result)
+})
+
 const server = app.listen(port, async () => {
     try {
         await db.setup()

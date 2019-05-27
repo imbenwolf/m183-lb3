@@ -16,6 +16,15 @@ const setup = () => new Promise((resolve, reject) =>
     })
 )
 
+const getUsers = () => new Promise((resolve, reject) => 
+    db.serialize(() => 
+        db.all('SELECT * FROM user', (err, users) => 
+            err ? reject(err) : resolve(users)
+        )
+    )
+)
+
 module.exports = {
-    setup
+    setup,
+    getUsers
 }
