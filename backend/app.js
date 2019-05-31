@@ -1,4 +1,5 @@
 const express = require("express")
+const session = require('express-session')
 const morgan = require("morgan")
 const shell = require("shelljs")
 
@@ -7,6 +8,15 @@ const auth = require("./auth.js")
 
 const app = express()
 const port = 3000
+
+app.use(session({
+    secret: 'm183 is the name - lb3 is the game',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: app.get('env') === 'production'
+    }
+}))
 
 app.use(morgan('combined'))
 app.use(express.urlencoded({extended: true}))
@@ -18,6 +28,9 @@ app.post('/register', async(req, res) => {
 
     try {
         await auth.register(name, password)
+
+        req.session.loggedIn = true
+        req.session.user = name
         result.success = true
     } catch (err) {
         result.error = (typeof err === 'string') ? err : "error during creation of user. please try again later"
@@ -33,12 +46,21 @@ app.post('/login', async(req, res) => {
 
     try {
         const authenticated = await auth.authenticate(name, password)
+        if (authenticated) {
+            req.session.loggedIn = true
+            req.session.user = name
+        }
         result.authenticated = authenticated
     } catch (err) {
         result.error = (typeof err === 'string') ? err : "error during authentication of user. please try again later"
     }
 
     res.send(result)
+})
+
+app.post('/logout', (req, res) => {
+    if (req.session.loggedIn) req.session.destroy()
+    res.send({authenticated: false})
 })
 
 app.get('/system', (req, res) => {
