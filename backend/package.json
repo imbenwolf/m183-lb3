@@ -11,6 +11,7 @@
     "serve": "node app.js"
   },
   "dependencies": {
+    "bcrypt": "^3.0.6",
     "express": "^4.17.0",
     "morgan": "^1.9.1",
     "shelljs": "^0.8.3",
