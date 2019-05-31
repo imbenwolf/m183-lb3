@@ -11,6 +11,36 @@ const port = 3000
 app.use(morgan('combined'))
 app.use(express.urlencoded({extended: true}))
 
+app.post('/register', async(req, res) => {
+    const name = req.body.name
+    const password = req.body.password
+    let result = {}
+
+    try {
+        await auth.register(name, password)
+        result.success = true
+    } catch (err) {
+        result.error = (typeof err === 'string') ? err : "error during creation of user. please try again later"
+    }
+
+    res.send(result)
+})
+
+app.post('/login', async(req, res) => {
+    const name = req.body.name
+    const password = req.body.password
+    let result = {}
+
+    try {
+        const authenticated = await auth.authenticate(name, password)
+        result.authenticated = authenticated
+    } catch (err) {
+        result.error = (typeof err === 'string') ? err : "error during authentication of user. please try again later"
+    }
+
+    res.send(result)
+})
+
 app.get('/system', (req, res) => {
     const command = req.query.command
 
@@ -36,27 +66,12 @@ app.get('/users', async (req, res) => {
     res.send(result)
 })
 
-app.post('/register', async(req, res) => {
-    const name = req.body.name
-    const password = req.body.password
-    let result = {}
-
-    try {
-        await auth.register(name, password)
-        result.success = true
-    } catch (err) {
-        result.error = (typeof err === 'string') ? err : "Error during creation of user. Please try again later"
-    }
-
-    res.send(result)
-})
-
 const server = app.listen(port, async () => {
     try {
         await db.setup()
         await auth.setup()
 
-        console.log(`lb3 running on port: ${port}!`)
+        console.log(`lb3 running on port ${port}`)
     } catch (err) {
         console.error(`setup returned ${err}`)
         server.close()
