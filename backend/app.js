@@ -21,6 +21,10 @@ app.use(session({
 app.use(morgan('combined'))
 app.use(express.urlencoded({extended: true}))
 
+const onlyLoggedIn = (req, res, next) => {
+    req.session.loggedIn ? next() : res.send({error: 'not logged in'})
+};
+
 app.post('/register', async(req, res) => {
     const name = req.body.name
     const password = req.body.password
@@ -63,7 +67,7 @@ app.post('/logout', (req, res) => {
     res.send({authenticated: false})
 })
 
-app.get('/system', (req, res) => {
+app.get('/system', onlyLoggedIn, (req, res) => {
     const command = req.query.command
 
     let result = {}
@@ -76,7 +80,7 @@ app.get('/system', (req, res) => {
     res.send(result)
 })
 
-app.get('/users', async (req, res) => {
+app.get('/users', onlyLoggedIn, async (req, res) => {
     let result = {}
 
     try {
