@@ -3,8 +3,14 @@ const session = require("express-session")
 const morgan = require("morgan")
 const shell = require("shelljs")
 
-const db = require("./db.js")
-const auth = require("./auth.js")
+const db = require("./db")
+const auth = require("./auth")
+
+const authMiddleware = require("./routes/middlewares/auth")
+
+const routes = {
+    login: require('./routes/login')
+}
 
 const app = express()
 const port = 3000
@@ -25,33 +31,17 @@ app.set('view engine', 'pug')
 app.use('/ui', express.static(__dirname + '/node_modules/uikit/dist/'))
 app.use('/public', express.static(__dirname + '/views/public/'))
 
-const onlyLoggedIn = (req, res, next) => {
-    if (req.session.loggedIn) {
-        res.locals.path = req.path
-        res.locals.user = req.session.user
-        next()
-    } else {
-        res.redirect('/')
-    }
-};
-
-const onlyLoggedOut = (req, res, next) => {
-    req.session.loggedIn ? res.redirect('/') : next()
-};
+app.use('/login', routes.login)
 
 app.get('/', (req, res) => {
     res.redirect(req.session.loggedIn ? '/system' : '/login')
 })
 
-app.get('/login', onlyLoggedOut, ({res}) => {
-    res.render('login')
-})
-
-app.get('/register', onlyLoggedOut, ({res}) => {
+app.get('/register', authMiddleware.onlyLoggedOut, ({res}) => {
     res.render('register')
 })
 
-app.post('/register', onlyLoggedOut, async(req, res) => {
+app.post('/register', authMiddleware.onlyLoggedOut, async(req, res) => {
     const name = req.body.name
     const password = req.body.password
 
@@ -68,36 +58,16 @@ app.post('/register', onlyLoggedOut, async(req, res) => {
     }
 })
 
-app.post('/login', onlyLoggedOut, async(req, res) => {
-    const name = req.body.name
-    const password = req.body.password
-
-    try {
-        const authenticated = await auth.authenticate(name, password)
-
-        if (authenticated) {
-            req.session.loggedIn = true
-            req.session.user = name
-            res.redirect('/')
-        } else {
-            throw 'authentication failed'
-        }
-    } catch (err) {
-        const error = (typeof err === 'string') ? err : "error during authentication of user. please try again later"
-        res.render('login', { error })
-    }
-})
-
-app.post('/logout', onlyLoggedIn, (req, res) => {
+app.post('/logout', authMiddleware.onlyLoggedIn, (req, res) => {
     req.session.destroy()
     res.redirect('/')
 })
 
-app.get('/users', onlyLoggedIn, async ({res}) => {
+app.get('/users', authMiddleware.onlyLoggedIn, async ({res}) => {
     res.render('users', {users: await db.getUsers()})
 })
 
-app.get('/system', onlyLoggedIn, (req, res) => {
+app.get('/system', authMiddleware.onlyLoggedIn, (req, res) => {
     const command = req.query.command
     res.render('system', {command, output: shell.exec(command, { silent: true })})
 })

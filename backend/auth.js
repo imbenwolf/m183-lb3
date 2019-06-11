@@ -19,22 +19,7 @@ const register = async (name, password) => {
     }
 }
 
-const authenticate = async (name, password) => {
-    if (name && password) {
-        const user = await db.getUser(name)
-        if (user) {
-            const authenticated = await bcrypt.compare(password, user.password)
-            return authenticated
-        } else {
-            throw 'user does not exist'
-        }
-    } else {
-        throw 'name and password must be supplied'
-    }
-}
-
 module.exports = {
     setup,
-    register,
-    authenticate
+    register
 }
