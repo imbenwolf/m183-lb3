@@ -1,0 +1,22 @@
+include ../components/uikit-base.pug
+include ../components/background.pug
+
+.uk-position-center
+  .uk-width-large.uk-margin-auto.uk-border-rounded.uk-card.uk-card-default.uk-card-body.uk-box-shadow-large
+    h1.uk-card-title.uk-text-center M183 LB3
+    form(action='/login' method='post')
+      .uk-margin
+        .uk-inline.uk-width-1-1
+          span.uk-form-icon(uk-icon='icon: user')
+          input.uk-input.uk-form-large(name='name', type='text')
+      .uk-margin
+        .uk-inline.uk-width-1-1
+          span.uk-form-icon(uk-icon='icon: lock')
+          input.uk-input.uk-form-large(name='password', type='password')
+      .uk-margin
+        button.uk-button.uk-button-primary.uk-button-large.uk-width-1-1 Login
+      .uk-text-small.uk-text-center Not registered? 
+        a(href='/register').uk-button-text Create an account
+
+script.
+    console.log("#{error}")

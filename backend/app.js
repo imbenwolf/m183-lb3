@@ -22,6 +22,8 @@ app.use(morgan('combined'))
 app.use(express.urlencoded({extended: true}))
 
 app.set('view engine', 'pug')
+app.use('/ui', express.static(__dirname + '/node_modules/uikit/dist/'))
+app.use('/public', express.static(__dirname + '/public/'))
 
 const onlyLoggedIn = (req, res, next) => {
     if (req.session.loggedIn) {
