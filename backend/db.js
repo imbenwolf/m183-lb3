@@ -1,4 +1,5 @@
 const sqlite3 = require('sqlite3').verbose()
+const bcrypt = require('bcrypt')
 const db = new sqlite3.Database(':memory:')
 
 const setup = () => new Promise((resolve, reject) =>
@@ -6,6 +7,8 @@ const setup = () => new Promise((resolve, reject) =>
         db.run('CREATE TABLE user (name TEXT, password TEXT)', err => 
             err ? reject(err) : resolve()
         )
+
+        await createUser('lb3', await bcrypt.hash('sml12345', 10))
     })
 )
 

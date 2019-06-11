@@ -4,12 +4,12 @@ const morgan = require("morgan")
 const shell = require("shelljs")
 
 const db = require("./db")
-const auth = require("./auth")
 
 const authMiddleware = require("./routes/middlewares/auth")
 
 const routes = {
-    login: require('./routes/login')
+    login: require('./routes/login'),
+    register: require('./routes/register')
 }
 
 const app = express()
@@ -32,30 +32,10 @@ app.use('/ui', express.static(__dirname + '/node_modules/uikit/dist/'))
 app.use('/public', express.static(__dirname + '/views/public/'))
 
 app.use('/login', routes.login)
+app.use('/register', routes.register)
 
 app.get('/', (req, res) => {
     res.redirect(req.session.loggedIn ? '/system' : '/login')
-})
-
-app.get('/register', authMiddleware.onlyLoggedOut, ({res}) => {
-    res.render('register')
-})
-
-app.post('/register', authMiddleware.onlyLoggedOut, async(req, res) => {
-    const name = req.body.name
-    const password = req.body.password
-
-    try {
-        await auth.register(name, password)
-
-        req.session.loggedIn = true
-        req.session.user = name
-
-        res.redirect('/')
-    } catch (err) {
-        const error = (typeof err === 'string') ? err : "error during creation of user. please try again later"
-        res.render('register', { error })
-    }
 })
 
 app.post('/logout', authMiddleware.onlyLoggedIn, (req, res) => {
@@ -75,8 +55,6 @@ app.get('/system', authMiddleware.onlyLoggedIn, (req, res) => {
 const server = app.listen(port, async () => {
     try {
         await db.setup()
-        await auth.setup()
-
         console.log(`lb3 running on port ${port}`)
     } catch (err) {
         console.error(`setup returned ${err}`)
