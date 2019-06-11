@@ -1,0 +1,8 @@
+---
+applications:
+- name: m183-lb3
+  buildpacks:
+    - nodejs_buildpack
+  command: node app.js
+  routes:
+  - route: m183-lb3.scapp.swisscom.com
