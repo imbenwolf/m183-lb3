@@ -34,15 +34,15 @@ app.set('view engine', 'pug')
 app.use('/ui', express.static(__dirname + '/node_modules/uikit/dist/'))
 app.use('/public', express.static(__dirname + '/views/public/'))
 
+app.get('/', (req, res) => {
+    res.redirect(req.session.loggedIn ? '/system' : '/login')
+})
+
 app.use('/login', routes.login)
 app.use('/register', routes.register)
 app.use('/logout', routes.logout)
 app.use('/users', routes.users)
 app.use('/system', routes.system)
-
-app.get('/', (req, res) => {
-    res.redirect(req.session.loggedIn ? '/system' : '/login')
-})
 
 db.serialize(() =>
     db.run('CREATE TABLE user (name TEXT, password TEXT)', async () => { 

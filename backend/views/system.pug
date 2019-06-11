@@ -11,13 +11,27 @@ block content
       else
         span No command specified
 
-    form(action="/system", method="get").uk-flex-inline.uk-width.uk-text-center.uk-margin
-      .uk-inline.uk-margin-right.uk-flex-auto
+    form#command-form(action="/system", method="get").uk-flex-inline.uk-margin
+      #command-input.uk-inline.uk-margin-right.uk-flex-auto.uk-width-1-1(class="uk-margin-small-bottom@s")
         span.uk-form-icon(uk-icon='icon: code')
-        input(name="command", type="text").uk-input.uk-form
-      button.uk-button.uk-button-default Execute
+        input(name="command", type="text").uk-input.uk-form-large.uk-form
+      button#command-button.uk-button.uk-button-large.uk-button-default Execute
 
   style.
     #command {
       word-break: break-all;
+    }
+
+    @media (max-width: 960px) {
+        #command-form {
+            display: block !important;
+        }
+
+        #command-form #command-input {
+            margin-bottom: 10px;
+        }
+
+        #command-form #command-button {
+            float: right;
+        }
     }

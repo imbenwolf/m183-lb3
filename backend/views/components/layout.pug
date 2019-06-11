@@ -77,19 +77,44 @@ style.
     flex: 1 0 auto;
   }
 
-  @media (min-width: 960px) {
+  @media (max-width: 550px) {
+    #nav {
+      display: block;
+    }
+
+    #nav .uk-navbar-left .uk-logo {
+      z-index: 991;
+      height: 40px;
+      min-height: 40px;
+      margin-top: 20px;
+    }
+
+    #nav .uk-navbar-center {
+      width: 100%;
+      top: 75px;
+      margin-left: -13px;
+    }
+
+    #nav .uk-navbar-right {
+      position: absolute;
+      top: 11px;
+      right: 0;
+    }
+  }
+
+  @media (max-width: 960px) {
     #content {
       max-width: 90%;
     }
   }
 
-  @media (min-width: 1200px) {
+  @media (max-width: 1200px) {
     #content {
       max-width: 75%;
     }
   }
 
-  @media (min-width: 1600px) {
+  @media (max-width: 1600px) {
     #content {
       max-width: 65%;
     }

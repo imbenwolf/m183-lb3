@@ -1,6 +1,6 @@
 const onlyLoggedIn = (req, res, next) => {
     if (req.session.loggedIn) {
-        res.locals.path = req.path
+        res.locals.path = req.baseUrl
         res.locals.user = req.session.user
         next()
     } else {
