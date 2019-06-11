@@ -1,0 +1,23 @@
+extends ../components/layout.pug
+
+block content
+  .uk-border-rounded.uk-card.uk-card-secondary.uk-card-body.uk-box-shadow-large
+    h1.uk-card-title.uk-margin-remove-bottom System
+    h2.uk-text-meta.uk-margin-remove-top
+      if (command && command.trim() && command.length) 
+        span command: 
+        span#command.uk-text-emphasis= command
+        pre.uk-card-secondary= output && output.length ? output : 'No output received...'
+      else
+        span No command specified
+
+    form(action="/system", method="get").uk-flex-inline.uk-width.uk-text-center.uk-margin
+      .uk-inline.uk-margin-right.uk-flex-auto
+        span.uk-form-icon(uk-icon='icon: code')
+        input(name="command", type="text").uk-input.uk-form
+      button.uk-button.uk-button-default Execute
+
+  style.
+    #command {
+      word-break: break-all;
+    }
