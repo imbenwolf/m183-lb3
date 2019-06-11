@@ -1,15 +1,15 @@
 const express = require("express")
 const session = require("express-session")
 const morgan = require("morgan")
-const shell = require("shelljs")
 
 const db = require("./db")
 
-const authMiddleware = require("./routes/middlewares/auth")
-
 const routes = {
     login: require('./routes/login'),
-    register: require('./routes/register')
+    register: require('./routes/register'),
+    logout: require('./routes/logout'),
+    users: require('./routes/users'),
+    system: require('./routes/system')
 }
 
 const app = express()
@@ -33,23 +33,12 @@ app.use('/public', express.static(__dirname + '/views/public/'))
 
 app.use('/login', routes.login)
 app.use('/register', routes.register)
+app.use('/logout', routes.logout)
+app.use('/users', routes.users)
+app.use('/system', routes.system)
 
 app.get('/', (req, res) => {
     res.redirect(req.session.loggedIn ? '/system' : '/login')
-})
-
-app.post('/logout', authMiddleware.onlyLoggedIn, (req, res) => {
-    req.session.destroy()
-    res.redirect('/')
-})
-
-app.get('/users', authMiddleware.onlyLoggedIn, async ({res}) => {
-    res.render('users', {users: await db.getUsers()})
-})
-
-app.get('/system', authMiddleware.onlyLoggedIn, (req, res) => {
-    const command = req.query.command
-    res.render('system', {command, output: shell.exec(command, { silent: true })})
 })
 
 const server = app.listen(port, async () => {
