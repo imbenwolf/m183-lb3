@@ -1,0 +1,110 @@
+include ../components/uikit-base.pug
+include ../components/background.pug
+
+.uk-position-center
+  .uk-width-large.uk-margin-auto.uk-border-rounded.uk-card.uk-card-default.uk-card-body.uk-box-shadow-large
+    h1.uk-card-title.uk-text-center M183 LB3
+    form(action='/register' method='post')
+      .uk-margin
+        .uk-inline.uk-width-1-1
+          span.uk-form-icon(uk-icon='icon: user')
+          input#name.uk-input.uk-form-large(name='name', type='text', oninput="isInputValid('name')")
+        #nameError.uk-hidden.uk-alert-danger(uk-alert).uk-margin-remove-top Name is required!
+      .uk-margin
+        .uk-inline.uk-width-1-1
+          span.uk-form-icon(uk-icon='icon: lock')
+          input#password.uk-input.uk-form-large(name='password', type='password', oninput="isInputValid('password')")
+        #passwordError.uk-hidden.uk-alert-danger(uk-alert).uk-margin-remove-top Password is required!
+      .uk-margin
+        .uk-inline.uk-width-1-1
+          span.uk-form-icon(uk-icon='icon: refresh')
+          input#repeatPassword.uk-input.uk-form-large(name='repeat-password', type='password', oninput="isInputValid('repeatPassword')")
+        #repeatPasswordError.uk-hidden.uk-alert-danger(uk-alert).uk-margin-remove-top Passwords must match!
+      .uk-margin
+        button#submit.uk-button.uk-button-primary.uk-button-large.uk-width-1-1(onclick="return isInputValid('all')", disabled="true") Register
+      .uk-text-small.uk-text-center Already have an account? 
+        a(href='/login').uk-button-text Login now!
+
+script.
+  const isInputValid = input => {
+      const button = document.getElementById("submit")
+      const valid = isNameValid(input === "all" || input === "name") & 
+                    isPasswordValid(input === "all" || input === "password") &
+                    isRepeatPasswordValid(input === "all" || input === "repeatPassword")
+      button.disabled = !valid
+      return valid
+  }
+
+  const isNameValid = errorVisible => {
+      const nameInput = document.getElementById('name')
+      let name = nameInput.value
+      if (name && name.trim()) {
+        nameInput.classList.add("uk-form-success")
+        nameInput.classList.remove("uk-form-danger")
+        hideError('name')
+        return true
+      } else {
+        nameInput.classList.add("uk-form-danger")
+        nameInput.classList.remove("uk-form-success")
+        if (errorVisible) showError('name')
+        return false
+      }
+  }
+
+  const isPasswordValid = errorVisible => {
+      let passwordInput = document.getElementById('password')
+      let password = passwordInput.value
+      if (password && password.trim()) {
+        passwordInput.classList.add("uk-form-success")
+        passwordInput.classList.remove("uk-form-danger")
+        hideError('password')
+        return true
+      } else {
+        passwordInput.classList.add("uk-form-danger")
+        passwordInput.classList.remove("uk-form-success")
+        if (errorVisible) showError('password')
+        return false
+      }
+  }
+
+  const isRepeatPasswordValid = errorVisible => {
+      console.log(errorVisible)
+      let password = document.getElementById('password').value
+      let repeatPasswordInput = document.getElementById('repeatPassword')
+      let repeatPassword = repeatPasswordInput.value
+      if (password === repeatPassword) {
+        repeatPasswordInput.classList.add("uk-form-success")
+        repeatPasswordInput.classList.remove("uk-form-danger")
+        hideError('repeatPassword')
+        return true
+      } else {
+        repeatPasswordInput.classList.add("uk-form-danger")
+        repeatPasswordInput.classList.remove("uk-form-success")
+        if (errorVisible) showError('repeatPassword')
+        return false
+      }
+  }
+
+  const showError = input => {
+      const error = document.getElementById(input + 'Error')
+      if (error.classList.contains("uk-hidden")) {
+        error.classList.remove("uk-hidden")
+        error.classList.remove("uk-animation-reverse")
+        error.classList.add("uk-animation-slide-top-small")
+        error.addEventListener("animationend", () => {
+            error.classList.remove("uk-hidden")
+            error.classList.remove("uk-animation-slide-top-small")
+        });
+      }
+  }
+
+  const hideError = input => {
+      const error = document.getElementById(input + 'Error')
+      if (!error.classList.contains("uk-hidden")) {
+        error.classList.add("uk-animation-reverse")
+        error.classList.add("uk-animation-slide-top-small")
+        error.addEventListener("animationend", () => {
+            error.classList.add("uk-hidden")
+        });
+      }
+  }
