@@ -1,0 +1,96 @@
+include uikit-base.pug
+include ../components/background.pug
+
+- const links = [{ label: 'Users', path: '/users'},{ label: 'System', path: '/system'}]
+
+header
+  nav#nav.uk-margin.uk-navbar-container.uk-navbar-transparent.uk-light
+    .uk-container
+      .uk-navbar
+        .uk-navbar-left
+          a.uk-navbar-item.uk-logo(href='/') M183 LB3
+          
+        .uk-navbar-center
+          ul.uk-navbar-nav
+            each link in links
+              li(class=(path === link.path) ? "uk-active" : "")
+                a(href=link.path)= link.label
+      
+        .uk-navbar-right
+          ul.uk-navbar-nav.uk-margin-right
+            li#loggedin.uk-card.uk-card-default.uk-card-body.uk-padding-small.uk-border-pill.uk-box-shadow.uk-light
+              span(uk-icon='icon: user')
+              span.uk-text-middle.uk-margin-small-left #{user}
+    
+          form(action="/logout", method="post").uk-margin-right
+            button#logout.uk-icon-button.uk-margin-small-right(href='', uk-icon='sign-out')
+
+#content.uk-margin-xlarge.uk-margin-auto.uk-width-1-1.uk-text-center
+  .uk-text-left.uk-inline
+    block content
+
+footer.uk-position-bottom.uk-position-relative.uk-navbar-container.uk-navbar-transparent.uk-light
+  .uk-container
+    .uk-navbar
+      .uk-navbar-center.uk-section.uk-padding
+        p.uk-text-emphasis Coded with ❤️ by Janik & Ben
+
+style.
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #nav .uk-navbar-item,
+  #nav .uk-navbar-nav > li > a {
+    height: 80px;
+  }
+
+  #loggedin, #logout {
+      background-color: transparent;
+      border: 1px solid rgba(255,255,255,0.6);
+  }
+
+  #logout {
+      transition-property: border-color;
+  }
+
+  #logout:hover {
+      border-color: #fff;
+  }
+
+  #loggedin span {
+      padding-right: 5px;
+      transition: color .1s ease-in-out;
+  }
+
+  #loggedin:hover span:last-child {
+      color: #fff;
+  }
+
+  #content {
+    flex: 1 0 auto;
+  }
+
+  @media (min-width: 960px) {
+    #content {
+      max-width: 90%;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    #content {
+      max-width: 75%;
+    }
+  }
+
+  @media (min-width: 1600px) {
+    #content {
+      max-width: 65%;
+    }
+  }

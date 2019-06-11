@@ -1,0 +1,15 @@
+extends ../components/layout.pug
+
+block content
+  .uk-border-rounded.uk-card.uk-card-secondary.uk-card-body.uk-box-shadow-large
+    h1.uk-card-title Users 
+    table.uk-table.uk-table-divider
+      thead
+        tr
+          th Name
+          th Hashed password
+      tbody
+        each user in users
+          tr
+            td= user.name
+            td= user.password
