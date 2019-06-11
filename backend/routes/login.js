@@ -1,13 +1,13 @@
-const db = require("../db.js")
 const bcrypt = require('bcrypt')
 const express = require('express')
 const router = express.Router()
 
 const authMiddleware = require("./middlewares/auth")
+const userModel = require("../models/user")
 
 const authenticate = async (name, password) => {
     if (name && password) {
-        const user = await db.getUser(name)
+        const user = await userModel.getUserByName(name)
         if (user) {
             const authenticated = await bcrypt.compare(password, user.password)
             return authenticated

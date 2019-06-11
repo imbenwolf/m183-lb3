@@ -3,6 +3,8 @@ const session = require("express-session")
 const morgan = require("morgan")
 
 const db = require("./db")
+const userModel = require("./models/user")
+const bcrypt = require('bcrypt')
 
 const routes = {
     login: require('./routes/login'),
@@ -25,6 +27,7 @@ app.use(session({
 }))
 
 app.use(morgan('combined'))
+
 app.use(express.urlencoded({extended: true}))
 
 app.set('view engine', 'pug')
@@ -41,12 +44,9 @@ app.get('/', (req, res) => {
     res.redirect(req.session.loggedIn ? '/system' : '/login')
 })
 
-const server = app.listen(port, async () => {
-    try {
-        await db.setup()
-        console.log(`lb3 running on port ${port}`)
-    } catch (err) {
-        console.error(`setup returned ${err}`)
-        server.close()
-    }
-})
+db.serialize(() =>
+    db.run('CREATE TABLE user (name TEXT, password TEXT)', async () => { 
+        await userModel.createUser('lb3', await bcrypt.hash('sml12345', 10))
+        app.listen(port, console.log(`M183 LB3 started on http://localhost:${port}/`))
+    })
+)

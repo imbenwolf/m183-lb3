@@ -1,17 +1,17 @@
-const db = require("../db.js")
 const bcrypt = require('bcrypt')
 const express = require('express')
 const router = express.Router()
 
 const authMiddleware = require("./middlewares/auth")
+const userModel = require("../models/user")
 
 const register = async (name, password) => {
     if (name && password) {
-        const user = await db.getUser(name)
+        const user = await userModel.getUserByName(name)
         if (user) throw `user "${name}" already exists`
 
         const hashedPassword = await bcrypt.hash(password, saltRounds)
-        await db.createUser(name, hashedPassword)
+        await userModel.createUser(name, hashedPassword)
     } else {
         throw 'name and password must be supplied'
     }
