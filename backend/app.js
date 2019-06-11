@@ -1,5 +1,5 @@
 const express = require("express")
-const session = require('express-session')
+const session = require("express-session")
 const morgan = require("morgan")
 const shell = require("shelljs")
 
@@ -21,75 +21,83 @@ app.use(session({
 app.use(morgan('combined'))
 app.use(express.urlencoded({extended: true}))
 
+app.set('view engine', 'pug')
+
 const onlyLoggedIn = (req, res, next) => {
-    req.session.loggedIn ? next() : res.send({error: 'not logged in'})
+    if (req.session.loggedIn) {
+        res.locals.path = req.path
+        res.locals.user = req.session.user
+        next()
+    } else {
+        res.redirect('/')
+    }
 };
 
-app.post('/register', async(req, res) => {
+const onlyLoggedOut = (req, res, next) => {
+    req.session.loggedIn ? res.redirect('/') : next()
+};
+
+app.get('/', (req, res) => {
+    res.redirect(req.session.loggedIn ? '/system' : '/login')
+})
+
+app.get('/login', onlyLoggedOut, ({res}) => {
+    res.render('login')
+})
+
+app.get('/register', onlyLoggedOut, ({res}) => {
+    res.render('register')
+})
+
+app.post('/register', onlyLoggedOut, async(req, res) => {
     const name = req.body.name
     const password = req.body.password
-    let result = {}
 
     try {
         await auth.register(name, password)
 
         req.session.loggedIn = true
         req.session.user = name
-        result.success = true
-    } catch (err) {
-        result.error = (typeof err === 'string') ? err : "error during creation of user. please try again later"
-    }
 
-    res.send(result)
+        res.redirect('/')
+    } catch (err) {
+        const error = (typeof err === 'string') ? err : "error during creation of user. please try again later"
+        res.render('register', { error })
+    }
 })
 
-app.post('/login', async(req, res) => {
+app.post('/login', onlyLoggedOut, async(req, res) => {
     const name = req.body.name
     const password = req.body.password
-    let result = {}
 
     try {
         const authenticated = await auth.authenticate(name, password)
+
         if (authenticated) {
             req.session.loggedIn = true
             req.session.user = name
+            res.redirect('/')
+        } else {
+            throw 'authentication failed'
         }
-        result.authenticated = authenticated
     } catch (err) {
-        result.error = (typeof err === 'string') ? err : "error during authentication of user. please try again later"
+        const error = (typeof err === 'string') ? err : "error during authentication of user. please try again later"
+        res.render('login', { error })
     }
-
-    res.send(result)
 })
 
-app.post('/logout', (req, res) => {
-    if (req.session.loggedIn) req.session.destroy()
-    res.send({authenticated: false})
+app.post('/logout', onlyLoggedIn, (req, res) => {
+    req.session.destroy()
+    res.redirect('/')
+})
+
+app.get('/users', onlyLoggedIn, async ({res}) => {
+    res.render('users', {users: await db.getUsers()})
 })
 
 app.get('/system', onlyLoggedIn, (req, res) => {
     const command = req.query.command
-
-    let result = {}
-    if (command) {
-        result.output = shell.exec(command, { silent: true })
-    } else {
-        result.error = 'Please specify a command with the "command" GET parameter'
-    }
-
-    res.send(result)
-})
-
-app.get('/users', onlyLoggedIn, async (req, res) => {
-    let result = {}
-
-    try {
-        result = await db.getUsers()
-    } catch (err) {
-        result.error = 'Error during fetching of users. Please try again later'
-    }
-
-    res.send(result)
+    res.render('system', {command, output: shell.exec(command, { silent: true })})
 })
 
 const server = app.listen(port, async () => {
