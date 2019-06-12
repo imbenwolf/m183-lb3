@@ -1,0 +1,20 @@
+mixin notification(message)
+  .notification.uk-alert-danger(uk-alert)
+    a.uk-alert-close(uk-close)
+    p= error
+
+  style.
+    .notification {
+      z-index: 1;
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+    }
+
+    .notification p {
+      margin-right: 15px;
+    }
+    
+    .uk-alert-close {
+      top: 22px;
+    }

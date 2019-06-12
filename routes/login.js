@@ -12,10 +12,10 @@ const authenticate = async (name, password) => {
             const authenticated = await bcrypt.compare(password, user.password)
             return authenticated
         } else {
-            throw 'user does not exist'
+            throw 'Authentication failed'
         }
     } else {
-        throw 'name and password must be supplied'
+        throw 'Name and password must be supplied'
     }
 }
 
@@ -35,10 +35,15 @@ router.post('/', authMiddleware.onlyLoggedOut, async(req, res) => {
             req.session.user = name
             res.redirect('/')
         } else {
-            throw 'authentication failed'
+            throw 'Authentication failed'
         }
     } catch (err) {
-        const error = (typeof err === 'string') ? err : "error during authentication of user. please try again later"
+        const error = (typeof err === 'string') ? err : "Error during authentication of user. Please try again later"
+        if (error === "Name and password must be supplied" || error === "Authentication failed") {
+            res.status(400)
+        } else {
+            res.status(500)
+        }
         res.render('login', { error })
     }
 })

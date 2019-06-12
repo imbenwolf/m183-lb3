@@ -5,7 +5,13 @@ const authMiddleware = require("./middlewares/auth")
 const userModel = require("../models/user")
 
 router.get('/', authMiddleware.onlyLoggedIn, async ({res}) => {
-    res.render('users', {users: await userModel.getAllUsers()})
+    try {
+        const users = await userModel.getAllUsers()
+        res.render('users', {users})
+    } catch (err) {
+        const error = "Error during fetching of users. Please try again later"
+        res.status(500).render('users', {error})
+    }
 })
 
 module.exports = router

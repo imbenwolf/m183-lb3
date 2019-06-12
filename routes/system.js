@@ -6,7 +6,13 @@ const authMiddleware = require("./middlewares/auth")
 
 router.get('/', authMiddleware.onlyLoggedIn, (req, res) => {
     const command = req.query.command
-    res.render('system', {command, output: shell.exec(command, { silent: true })})
+      try {
+          const output = command ? shell.exec(command, { silent: true }) : ""
+          res.render('system', {command, output})
+      } catch (err) {
+          const error = `Executing command returned: ${err}`
+          res.status(500).render('system', {error})
+      }
 })
 
 module.exports = router

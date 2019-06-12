@@ -4,12 +4,12 @@ const onlyLoggedIn = (req, res, next) => {
         res.locals.user = req.session.user
         next()
     } else {
-        res.redirect('/')
+        res.status(403).redirect('/')
     }
 };
 
 const onlyLoggedOut = (req, res, next) => {
-    req.session.loggedIn ? res.redirect('/') : next()
+    req.session.loggedIn ? res.status(403).redirect('/') : next()
 };
 
 module.exports = {
